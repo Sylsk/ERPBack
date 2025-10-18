@@ -3,14 +3,14 @@ const pool = require('../db/connection');
 const Supplier = {
   findAll: async () => {
     const result = await pool.query(
-      'SELECT * FROM proveedores WHERE activo = true ORDER BY razon_social'
+      'SELECT * FROM public.proveedor ORDER BY nombre'
     );
     return result.rows;
   },
 
   findById: async (id) => {
     const result = await pool.query(
-      'SELECT * FROM proveedores WHERE id_proveedor = $1 AND activo = true',
+      'SELECT * FROM public.proveedor WHERE id_proveedor = $1',
       [id]
     );
     return result.rows[0];
@@ -18,37 +18,37 @@ const Supplier = {
 
   findByIdIncludeInactive: async (id) => {
     const result = await pool.query(
-      'SELECT * FROM proveedores WHERE id_proveedor = $1',
+      'SELECT * FROM public.proveedor WHERE id_proveedor = $1',
       [id]
     );
     return result.rows[0];
   },
 
   create: async (data) => {
-    const { razon_social, ruc, direccion, telefono, email, contacto_nombre, contacto_telefono } = data;
+    const { nombre, rut, direccion, telefono, email, contacto } = data;
     const result = await pool.query(
-      `INSERT INTO proveedores (razon_social, ruc, direccion, telefono, email, contacto_nombre, contacto_telefono)
-       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-      [razon_social, ruc, direccion, telefono, email, contacto_nombre, contacto_telefono]
+      `INSERT INTO public.proveedor (nombre, rut, direccion, telefono, email, contacto)
+       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+      [nombre, rut, direccion, telefono, email, contacto]
     );
     return result.rows[0];
   },
 
   update: async (id, data) => {
-    const { razon_social, ruc, direccion, telefono, email, contacto_nombre, contacto_telefono, activo } = data;
+    const { nombre, rut, direccion, telefono, email, contacto } = data;
     const result = await pool.query(
-      `UPDATE proveedores 
-       SET razon_social = $1, ruc = $2, direccion = $3, telefono = $4, 
-           email = $5, contacto_nombre = $6, contacto_telefono = $7, activo = $8
-       WHERE id_proveedor = $9 RETURNING *`,
-      [razon_social, ruc, direccion, telefono, email, contacto_nombre, contacto_telefono, activo, id]
+      `UPDATE public.proveedor 
+       SET nombre = $1, rut = $2, direccion = $3, telefono = $4, 
+           email = $5, contacto = $6
+       WHERE id_proveedor = $7 RETURNING *`,
+      [nombre, rut, direccion, telefono, email, contacto, id]
     );
     return result.rows[0];
   },
 
   delete: async (id) => {
     const result = await pool.query(
-      'UPDATE proveedores SET activo = false WHERE id_proveedor = $1 RETURNING *',
+      'DELETE FROM public.proveedor WHERE id_proveedor = $1 RETURNING *',
       [id]
     );
     return result.rows[0];

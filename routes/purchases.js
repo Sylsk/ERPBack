@@ -1,12 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const purchaseController = require('../controllers/purchaseController');
-const { verificarToken, verificarRol } = require('../middleware/auth');
 
-router.get('/', verificarToken, purchaseController.listar);
-router.get('/:id', verificarToken, purchaseController.obtenerPorId);
-router.post('/', verificarToken, verificarRol('comprador', 'supervisor'), purchaseController.crear);
-router.put('/:id', verificarToken, verificarRol('comprador', 'supervisor'), purchaseController.actualizar);
-router.delete('/:id', verificarToken, verificarRol('supervisor'), purchaseController.eliminar);
+router.get('/', purchaseController.listar);
+router.get('/:id_orden_compra', purchaseController.obtenerPorId);
+router.post('/', purchaseController.crear);
+router.put('/:id_orden_compra', purchaseController.actualizar);
+router.delete('/:id_orden_compra', purchaseController.eliminar);
 
 module.exports = router;

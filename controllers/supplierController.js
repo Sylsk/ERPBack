@@ -29,27 +29,26 @@ const supplierController = {
 
   crear: async (req, res) => {
     try {
-      const { razon_social, ruc, direccion, telefono, email, contacto_nombre, contacto_telefono } = req.body;
+      const { nombre, rut, direccion, telefono, email, contacto } = req.body;
 
-      if (!razon_social || !ruc) {
-        return res.status(400).json({ error: 'Razón social y RUC son requeridos' });
+      if (!nombre || !rut) {
+        return res.status(400).json({ error: 'Nombre y RUT son requeridos' });
       }
 
       const proveedor = await Supplier.create({
-        razon_social,
-        ruc,
+        nombre,
+        rut,
         direccion,
         telefono,
         email,
-        contacto_nombre,
-        contacto_telefono
+        contacto
       });
 
       res.status(201).json(proveedor);
     } catch (error) {
       console.error('Error al crear proveedor:', error);
       if (error.code === '23505') {
-        return res.status(400).json({ error: 'El RUC ya está registrado' });
+        return res.status(400).json({ error: 'El RUT ya está registrado' });
       }
       res.status(500).json({ error: 'Error al crear proveedor' });
     }
@@ -58,7 +57,7 @@ const supplierController = {
   actualizar: async (req, res) => {
     try {
       const { id } = req.params;
-      const { razon_social, ruc, direccion, telefono, email, contacto_nombre, contacto_telefono, activo } = req.body;
+      const { nombre, rut, direccion, telefono, email, contacto } = req.body;
 
       const proveedorExiste = await Supplier.findById(id);
       if (!proveedorExiste) {
@@ -66,14 +65,12 @@ const supplierController = {
       }
 
       const proveedor = await Supplier.update(id, {
-        razon_social,
-        ruc,
+        nombre,
+        rut,
         direccion,
         telefono,
         email,
-        contacto_nombre,
-        contacto_telefono,
-        activo
+        contacto
       });
 
       res.json(proveedor);
@@ -90,10 +87,6 @@ const supplierController = {
       const proveedor = await Supplier.findById(id);
       if (!proveedor) {
         return res.status(404).json({ error: 'Proveedor no encontrado' });
-      }
-
-      if (!proveedor.activo) {
-        return res.status(400).json({ error: 'El proveedor ya está eliminado' });
       }
 
       await Supplier.delete(id);

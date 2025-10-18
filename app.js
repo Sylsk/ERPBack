@@ -2,9 +2,10 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
-const authRoutes = require('./routes/auth');
 const suppliersRoutes = require('./routes/suppliers');
 const purchasesRoutes = require('./routes/purchases');
+const employeesRoutes = require('./routes/employees');
+const productsRoutes = require('./routes/products');
 
 const app = express();
 
@@ -12,18 +13,20 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/api/auth', authRoutes);
-app.use('/api/proveedores', suppliersRoutes);
-app.use('/api/compras', purchasesRoutes);
+app.use('/api/suppliers', suppliersRoutes);
+app.use('/api/purchases', purchasesRoutes);
+app.use('/api/employees', employeesRoutes);
+app.use('/api/products', productsRoutes);
 
 app.get('/', (req, res) => {
   res.json({
     message: 'API ERP - Módulo de Compras',
     version: '1.0.0',
     endpoints: {
-      auth: '/api/auth/login',
-      proveedores: '/api/proveedores',
-      compras: '/api/compras'
+      suppliers: '/api/suppliers',
+      purchases: '/api/purchases',
+      employees: '/api/employees',
+      products: '/api/products'
     }
   });
 });

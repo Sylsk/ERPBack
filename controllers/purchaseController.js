@@ -16,8 +16,8 @@ const purchaseController = {
 
   obtenerPorId: async (req, res) => {
     try {
-      const { id } = req.params;
-      const compra = await PurchaseOrder.findWithDetails(id);
+      const { id_orden_compra } = req.params;
+      const compra = await PurchaseOrder.findWithDetails(id_orden_compra);
 
       if (!compra) {
         return res.status(404).json({ error: 'Orden de compra no encontrada' });
@@ -32,7 +32,7 @@ const purchaseController = {
 
   crear: async (req, res) => {
     try {
-      const { id_proveedor, id_empleado, fecha_entrega_esperada, observaciones, detalle } = req.body;
+      const { id_proveedor, id_empleado, detalle } = req.body;
 
       if (!id_proveedor) {
         return res.status(400).json({ error: 'El proveedor es obligatorio' });
@@ -77,18 +77,13 @@ const purchaseController = {
         item.subtotal = item.cantidad * item.precio_unitario;
       }
 
-      const numero_oc = await PurchaseOrder.generateNumeroOC();
-
       const compra = await PurchaseOrder.create({
-        numero_oc,
         id_proveedor,
         id_empleado,
-        fecha_entrega_esperada,
-        observaciones,
         detalle
       });
 
-      const compraCompleta = await PurchaseOrder.findWithDetails(compra.id_compra);
+      const compraCompleta = await PurchaseOrder.findWithDetails(compra.id_orden_compra);
       res.status(201).json(compraCompleta);
     } catch (error) {
       console.error('Error al crear compra:', error);
@@ -98,26 +93,15 @@ const purchaseController = {
 
   actualizar: async (req, res) => {
     try {
-      const { id } = req.params;
-      const { fecha_entrega_esperada, estado, observaciones } = req.body;
+      const { id_orden_compra } = req.params;
+      const { estado } = req.body;
 
-      const compraExiste = await PurchaseOrder.findById(id);
+      const compraExiste = await PurchaseOrder.findById(id_orden_compra);
       if (!compraExiste) {
         return res.status(404).json({ error: 'Orden de compra no encontrada' });
       }
 
-      let aprobado_por = null;
-      if (estado === 'APROBADA') {
-        aprobado_por = req.usuario.id_empleado;
-      }
-
-      const compra = await PurchaseOrder.update(id, {
-        fecha_entrega_esperada,
-        estado,
-        observaciones,
-        aprobado_por
-      });
-
+      const compra = await PurchaseOrder.update(id_orden_compra, { estado });
       res.json(compra);
     } catch (error) {
       console.error('Error al actualizar compra:', error);
@@ -127,14 +111,14 @@ const purchaseController = {
 
   eliminar: async (req, res) => {
     try {
-      const { id } = req.params;
+      const { id_orden_compra } = req.params;
 
-      const compra = await PurchaseOrder.findById(id);
+      const compra = await PurchaseOrder.findById(id_orden_compra);
       if (!compra) {
         return res.status(404).json({ error: 'Orden de compra no encontrada' });
       }
 
-      await PurchaseOrder.delete(id);
+      await PurchaseOrder.delete(id_orden_compra);
       res.json({ message: 'Orden de compra eliminada correctamente' });
     } catch (error) {
       console.error('Error al eliminar compra:', error);

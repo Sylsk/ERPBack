@@ -1,16 +1,16 @@
 const pool = require('../db/connection');
 
-const Producto = {
+const Product = {
   findAll: async () => {
     const result = await pool.query(
-      'SELECT * FROM productos WHERE activo = true ORDER BY nombre'
+      'SELECT * FROM public.producto WHERE estado = true ORDER BY nombre'
     );
     return result.rows;
   },
 
   findById: async (id) => {
     const result = await pool.query(
-      'SELECT * FROM productos WHERE id_producto = $1',
+      'SELECT * FROM public.producto WHERE id_producto = $1',
       [id]
     );
     return result.rows[0];
@@ -18,11 +18,11 @@ const Producto = {
 
   exists: async (id) => {
     const result = await pool.query(
-      'SELECT id_producto FROM productos WHERE id_producto = $1 AND activo = true',
+      'SELECT id_producto FROM public.producto WHERE id_producto = $1 AND estado = true',
       [id]
     );
     return result.rows.length > 0;
   }
 };
 
-module.exports = Producto;
+module.exports = Product;
