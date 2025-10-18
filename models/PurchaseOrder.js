@@ -1,6 +1,6 @@
-const pool = require('../db/conexion');
+const pool = require('../db/connection');
 
-const CompraOC = {
+const PurchaseOrder = {
   findAll: async () => {
     const result = await pool.query(
       `SELECT c.*, p.razon_social, e.nombre || ' ' || e.apellido as empleado_nombre
@@ -131,4 +131,4 @@ const CompraOC = {
   }
 };
 
-module.exports = CompraOC;
+module.exports = PurchaseOrder;

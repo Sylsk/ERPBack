@@ -1,92 +1,74 @@
-# Backend ERP - Módulo de Compras
+# Backend ERP - Purchase Module
 
-Sistema backend para la gestión del módulo de Compras de un ERP académico.
+Backend system for the Purchase module of an academic ERP.
 
-## Estructura del Proyecto
-
-```
-ERPBack/
-├── app.js
-├── package.json
-├── .env
-├── db/
-│   ├── conexion.js
-│   ├── schema.sql
-│   └── seed.sql
-├── models/
-│   ├── CompraOC.js
-│   ├── Proveedor.js
-│   ├── Producto.js
-│   ├── Empleado.js
-│   └── Usuario.js
-├── controllers/
-│   ├── compraController.js
-│   ├── proveedorController.js
-│   └── authController.js
-├── routes/
-│   ├── compras.js
-│   ├── proveedores.js
-│   └── auth.js
-└── middleware/
-    └── auth.js
-```
-
-## Instalación
+## Installation
 
 ```bash
 npm install
 ```
 
-## Configuración Base de Datos
+## Database Configuration
 
-1. Ejecutar script de creación de tablas:
+Configure your environment variables in `.env` file:
 ```bash
-psql -h ep-royal-glade-ac55fitc-pooler.sa-east-1.aws.neon.tech -U neondb_owner -d neondb -f db/schema.sql
+DB_HOST=your_host
+DB_PORT=5432
+DB_NAME=your_database
+DB_USER=your_username
+DB_PASSWORD=your_password
+DB_SSL=true
+JWT_SECRET=your_jwt_secret
+PORT=3000
 ```
 
-2. Cargar datos iniciales:
+Run the database setup script to create tables and load initial data:
 ```bash
-psql -h ep-royal-glade-ac55fitc-pooler.sa-east-1.aws.neon.tech -U neondb_owner -d neondb -f db/seed.sql
+node setup-db.js
 ```
 
-## Ejecución
+## Execution
 
 ```bash
 npm start
 ```
 
-## Endpoints API
+## API Endpoints
 
-### Autenticación
+### Authentication
+- `POST /api/auth/login` - User login
+- `GET /api/auth/verificar` - Token verification
 
-- POST /api/auth/login
-- GET /api/auth/verificar
+### Suppliers
+- `GET /api/proveedores` - List all suppliers
+- `GET /api/proveedores/:id` - Get supplier by ID
+- `POST /api/proveedores` - Create new supplier
+- `PUT /api/proveedores/:id` - Update supplier
+- `DELETE /api/proveedores/:id` - Delete supplier
 
-### Proveedores
+### Purchase Orders
+- `GET /api/compras` - List all purchase orders
+- `GET /api/compras/:id` - Get purchase order by ID
+- `POST /api/compras` - Create new purchase order
+- `PUT /api/compras/:id` - Update purchase order
+- `DELETE /api/compras/:id` - Delete purchase order
 
-- GET /api/proveedores
-- GET /api/proveedores/:id
-- POST /api/proveedores
-- PUT /api/proveedores/:id
-- DELETE /api/proveedores/:id
+## Business Rules
 
-### Compras
+### Purchase Order States
+- **PENDIENTE**: Created, waiting for approval
+- **APROBADA**: Approved by supervisor
+- **RECHAZADA**: Rejected
+- **RECIBIDA**: Merchandise received
+- **CANCELADA**: Cancelled
 
-- GET /api/compras
-- GET /api/compras/:id
-- POST /api/compras
-- PUT /api/compras/:id
-- DELETE /api/compras/:id
+### Roles and Permissions
+- **supervisor**: Full access (create, modify, delete, approve orders)
+- **comprador**: Create and modify orders
+- **consulta**: Read-only access
 
-## Usuarios de Prueba
-
-- Usuario: jperez / Contraseña: 123456 / Rol: supervisor
-- Usuario: mgonzalez / Contraseña: 123456 / Rol: comprador
-- Usuario: amartinez / Contraseña: 123456 / Rol: comprador
-- Usuario: efernandez / Contraseña: 123456 / Rol: consulta
-
-## Roles y Permisos
-
-- **supervisor**: Crear, modificar, eliminar y aprobar órdenes
-- **comprador**: Crear y modificar órdenes
-- **consulta**: Solo lectura
+### Validations
+- Supplier is mandatory when creating an order
+- Products must exist in inventory
+- Quantities and prices cannot be negative
+- Employee must exist

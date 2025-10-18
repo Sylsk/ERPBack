@@ -1,9 +1,9 @@
-const Proveedor = require('../models/Proveedor');
+const Supplier = require('../models/Supplier');
 
-const proveedorController = {
+const supplierController = {
   listar: async (req, res) => {
     try {
-      const proveedores = await Proveedor.findAll();
+      const proveedores = await Supplier.findAll();
       res.json(proveedores);
     } catch (error) {
       console.error('Error al listar proveedores:', error);
@@ -14,7 +14,7 @@ const proveedorController = {
   obtenerPorId: async (req, res) => {
     try {
       const { id } = req.params;
-      const proveedor = await Proveedor.findById(id);
+      const proveedor = await Supplier.findById(id);
 
       if (!proveedor) {
         return res.status(404).json({ error: 'Proveedor no encontrado' });
@@ -35,7 +35,7 @@ const proveedorController = {
         return res.status(400).json({ error: 'Razón social y RUC son requeridos' });
       }
 
-      const proveedor = await Proveedor.create({
+      const proveedor = await Supplier.create({
         razon_social,
         ruc,
         direccion,
@@ -60,12 +60,12 @@ const proveedorController = {
       const { id } = req.params;
       const { razon_social, ruc, direccion, telefono, email, contacto_nombre, contacto_telefono, activo } = req.body;
 
-      const proveedorExiste = await Proveedor.findById(id);
+      const proveedorExiste = await Supplier.findById(id);
       if (!proveedorExiste) {
         return res.status(404).json({ error: 'Proveedor no encontrado' });
       }
 
-      const proveedor = await Proveedor.update(id, {
+      const proveedor = await Supplier.update(id, {
         razon_social,
         ruc,
         direccion,
@@ -87,12 +87,16 @@ const proveedorController = {
     try {
       const { id } = req.params;
 
-      const proveedor = await Proveedor.findById(id);
+      const proveedor = await Supplier.findById(id);
       if (!proveedor) {
         return res.status(404).json({ error: 'Proveedor no encontrado' });
       }
 
-      await Proveedor.delete(id);
+      if (!proveedor.activo) {
+        return res.status(400).json({ error: 'El proveedor ya está eliminado' });
+      }
+
+      await Supplier.delete(id);
       res.json({ message: 'Proveedor eliminado correctamente' });
     } catch (error) {
       console.error('Error al eliminar proveedor:', error);
@@ -101,4 +105,4 @@ const proveedorController = {
   }
 };
 
-module.exports = proveedorController;
+module.exports = supplierController;

@@ -1,6 +1,6 @@
-const pool = require('../db/conexion');
+const pool = require('../db/connection');
 
-const Proveedor = {
+const Supplier = {
   findAll: async () => {
     const result = await pool.query(
       'SELECT * FROM proveedores WHERE activo = true ORDER BY razon_social'
@@ -9,6 +9,14 @@ const Proveedor = {
   },
 
   findById: async (id) => {
+    const result = await pool.query(
+      'SELECT * FROM proveedores WHERE id_proveedor = $1 AND activo = true',
+      [id]
+    );
+    return result.rows[0];
+  },
+
+  findByIdIncludeInactive: async (id) => {
     const result = await pool.query(
       'SELECT * FROM proveedores WHERE id_proveedor = $1',
       [id]
@@ -47,4 +55,4 @@ const Proveedor = {
   }
 };
 
-module.exports = Proveedor;
+module.exports = Supplier;

@@ -3,8 +3,8 @@ const cors = require('cors');
 require('dotenv').config();
 
 const authRoutes = require('./routes/auth');
-const proveedoresRoutes = require('./routes/proveedores');
-const comprasRoutes = require('./routes/compras');
+const suppliersRoutes = require('./routes/suppliers');
+const purchasesRoutes = require('./routes/purchases');
 
 const app = express();
 
@@ -13,8 +13,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/auth', authRoutes);
-app.use('/api/proveedores', proveedoresRoutes);
-app.use('/api/compras', comprasRoutes);
+app.use('/api/proveedores', suppliersRoutes);
+app.use('/api/compras', purchasesRoutes);
 
 app.get('/', (req, res) => {
   res.json({

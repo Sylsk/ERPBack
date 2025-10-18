@@ -1,4 +1,4 @@
-const pool = require('../db/conexion');
+const pool = require('../db/connection');
 
 const Usuario = {
   findByUsername: async (username) => {

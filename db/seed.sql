@@ -184,9 +184,9 @@ INSERT INTO compras_detalle (id_compra, id_producto, cantidad, precio_unitario, 
 (10, 67, 40, 5.00, 200.00);
 
 INSERT INTO usuarios (username, password_hash, id_empleado, rol) VALUES
-('jperez', '$2a$10$XQYvZ8vP8M9K3Gx1Y2Z3.OYqP9Q8R7S6T5U4V3W2X1Y0Z9A8B7C6D', 1, 'supervisor'),
-('mgonzalez', '$2a$10$XQYvZ8vP8M9K3Gx1Y2Z3.OYqP9Q8R7S6T5U4V3W2X1Y0Z9A8B7C6D', 2, 'comprador'),
-('crodriguez', '$2a$10$XQYvZ8vP8M9K3Gx1Y2Z3.OYqP9Q8R7S6T5U4V3W2X1Y0Z9A8B7C6D', 3, 'supervisor'),
-('amartinez', '$2a$10$XQYvZ8vP8M9K3Gx1Y2Z3.OYqP9Q8R7S6T5U4V3W2X1Y0Z9A8B7C6D', 4, 'comprador'),
-('llopez', '$2a$10$XQYvZ8vP8M9K3Gx1Y2Z3.OYqP9Q8R7S6T5U4V3W2X1Y0Z9A8B7C6D', 5, 'comprador'),
-('efernandez', '$2a$10$XQYvZ8vP8M9K3Gx1Y2Z3.OYqP9Q8R7S6T5U4V3W2X1Y0Z9A8B7C6D', 6, 'consulta');
+('jperez', '$2a$10$7XrKoIse68st4tJVhQ.pKe1zR2fIKVc6v8yp6PiF77RLwgdmYM3Xi', 1, 'supervisor'),
+('mgonzalez', '$2a$10$7XrKoIse68st4tJVhQ.pKe1zR2fIKVc6v8yp6PiF77RLwgdmYM3Xi', 2, 'comprador'),
+('crodriguez', '$2a$10$7XrKoIse68st4tJVhQ.pKe1zR2fIKVc6v8yp6PiF77RLwgdmYM3Xi', 3, 'supervisor'),
+('amartinez', '$2a$10$7XrKoIse68st4tJVhQ.pKe1zR2fIKVc6v8yp6PiF77RLwgdmYM3Xi', 4, 'comprador'),
+('llopez', '$2a$10$7XrKoIse68st4tJVhQ.pKe1zR2fIKVc6v8yp6PiF77RLwgdmYM3Xi', 5, 'comprador'),
+('efernandez', '$2a$10$7XrKoIse68st4tJVhQ.pKe1zR2fIKVc6v8yp6PiF77RLwgdmYM3Xi', 6, 'consulta');

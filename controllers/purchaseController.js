@@ -1,12 +1,12 @@
-const CompraOC = require('../models/CompraOC');
-const Proveedor = require('../models/Proveedor');
-const Producto = require('../models/Producto');
-const Empleado = require('../models/Empleado');
+const PurchaseOrder = require('../models/PurchaseOrder');
+const Supplier = require('../models/Supplier');
+const Product = require('../models/Product');
+const Employee = require('../models/Employee');
 
-const compraController = {
+const purchaseController = {
   listar: async (req, res) => {
     try {
-      const compras = await CompraOC.findAll();
+      const compras = await PurchaseOrder.findAll();
       res.json(compras);
     } catch (error) {
       console.error('Error al listar compras:', error);
@@ -17,7 +17,7 @@ const compraController = {
   obtenerPorId: async (req, res) => {
     try {
       const { id } = req.params;
-      const compra = await CompraOC.findWithDetails(id);
+      const compra = await PurchaseOrder.findWithDetails(id);
 
       if (!compra) {
         return res.status(404).json({ error: 'Orden de compra no encontrada' });
@@ -46,12 +46,12 @@ const compraController = {
         return res.status(400).json({ error: 'Debe incluir al menos un producto' });
       }
 
-      const proveedor = await Proveedor.findById(id_proveedor);
+      const proveedor = await Supplier.findById(id_proveedor);
       if (!proveedor) {
         return res.status(400).json({ error: 'El proveedor no existe' });
       }
 
-      const empleadoExiste = await Empleado.exists(id_empleado);
+      const empleadoExiste = await Employee.exists(id_empleado);
       if (!empleadoExiste) {
         return res.status(400).json({ error: 'El empleado no existe' });
       }
@@ -69,7 +69,7 @@ const compraController = {
           return res.status(400).json({ error: 'El precio no puede ser negativo' });
         }
 
-        const productoExiste = await Producto.exists(item.id_producto);
+        const productoExiste = await Product.exists(item.id_producto);
         if (!productoExiste) {
           return res.status(400).json({ error: `El producto ${item.id_producto} no existe en inventario` });
         }
@@ -77,9 +77,9 @@ const compraController = {
         item.subtotal = item.cantidad * item.precio_unitario;
       }
 
-      const numero_oc = await CompraOC.generateNumeroOC();
+      const numero_oc = await PurchaseOrder.generateNumeroOC();
 
-      const compra = await CompraOC.create({
+      const compra = await PurchaseOrder.create({
         numero_oc,
         id_proveedor,
         id_empleado,
@@ -88,7 +88,7 @@ const compraController = {
         detalle
       });
 
-      const compraCompleta = await CompraOC.findWithDetails(compra.id_compra);
+      const compraCompleta = await PurchaseOrder.findWithDetails(compra.id_compra);
       res.status(201).json(compraCompleta);
     } catch (error) {
       console.error('Error al crear compra:', error);
@@ -101,7 +101,7 @@ const compraController = {
       const { id } = req.params;
       const { fecha_entrega_esperada, estado, observaciones } = req.body;
 
-      const compraExiste = await CompraOC.findById(id);
+      const compraExiste = await PurchaseOrder.findById(id);
       if (!compraExiste) {
         return res.status(404).json({ error: 'Orden de compra no encontrada' });
       }
@@ -111,7 +111,7 @@ const compraController = {
         aprobado_por = req.usuario.id_empleado;
       }
 
-      const compra = await CompraOC.update(id, {
+      const compra = await PurchaseOrder.update(id, {
         fecha_entrega_esperada,
         estado,
         observaciones,
@@ -129,12 +129,12 @@ const compraController = {
     try {
       const { id } = req.params;
 
-      const compra = await CompraOC.findById(id);
+      const compra = await PurchaseOrder.findById(id);
       if (!compra) {
         return res.status(404).json({ error: 'Orden de compra no encontrada' });
       }
 
-      await CompraOC.delete(id);
+      await PurchaseOrder.delete(id);
       res.json({ message: 'Orden de compra eliminada correctamente' });
     } catch (error) {
       console.error('Error al eliminar compra:', error);
@@ -143,4 +143,4 @@ const compraController = {
   }
 };
 
-module.exports = compraController;
+module.exports = purchaseController;
