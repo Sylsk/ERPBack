@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  # Servicio de la aplicación Node.js
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      # Montar el código fuente para hot reload
+      - .:/app
+      # Excluir node_modules del host para evitar conflictos
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - .env
+    # Reiniciar automáticamente si el contenedor falla
+    restart: unless-stopped
+
