@@ -134,6 +134,89 @@ const PurchaseOrder = {
     // Esta función ya no es necesaria según la nueva estructura
     const timestamp = Date.now();
     return `OC-${timestamp}`;
+  },
+
+  findAllWithCompleteInfo: async () => {
+    try {
+      // Consulta que une las dos tablas y muestra toda la información
+      const result = await pool.query(
+        `SELECT 
+          oc.id_orden_compra,
+          oc.id_proveedor,
+          oc.id_empleado,
+          oc.fecha,
+          oc.estado,
+          p.nombre as proveedor_nombre,
+          p.rut as proveedor_rut,
+          p.direccion as proveedor_direccion,
+          p.telefono as proveedor_telefono,
+          e.nombre || ' ' || e.apellido as empleado_nombre,
+          e.email as empleado_email,
+          d.id_detalle_compra,
+          d.id_producto,
+          prod.nombre as producto_nombre,
+          prod.descripcion as producto_descripcion,
+          d.cantidad,
+          d.precio_unitario,
+          d.subtotal,
+          -- Totales calculados por orden
+          (SELECT SUM(cd.subtotal) 
+           FROM "Compras".compras_detalle cd 
+           WHERE cd.id_orden_compra = oc.id_orden_compra) as total_orden
+        FROM "Compras".compras_oc oc
+        INNER JOIN public.proveedor p ON oc.id_proveedor = p.id_proveedor
+        INNER JOIN public.empleado e ON oc.id_empleado = e.id_empleado
+        LEFT JOIN "Compras".compras_detalle d ON oc.id_orden_compra = d.id_orden_compra
+        LEFT JOIN public.producto prod ON d.id_producto = prod.id_producto
+        ORDER BY oc.fecha DESC, oc.id_orden_compra, d.id_detalle_compra`
+      );
+
+      // Agrupar los resultados por orden de compra
+      const comprasMap = new Map();
+      
+      result.rows.forEach(row => {
+        const ordenId = row.id_orden_compra;
+        
+        if (!comprasMap.has(ordenId)) {
+          comprasMap.set(ordenId, {
+            id_orden_compra: row.id_orden_compra,
+            id_proveedor: row.id_proveedor,
+            id_empleado: row.id_empleado,
+            fecha: row.fecha,
+            estado: row.estado,
+            total_orden: parseFloat(row.total_orden) || 0,
+            proveedor: {
+              nombre: row.proveedor_nombre,
+              rut: row.proveedor_rut,
+              direccion: row.proveedor_direccion,
+              telefono: row.proveedor_telefono
+            },
+            empleado: {
+              nombre: row.empleado_nombre,
+              email: row.empleado_email
+            },
+            detalle: []
+          });
+        }
+        
+        // Si hay detalles, agregarlos
+        if (row.id_detalle_compra) {
+          comprasMap.get(ordenId).detalle.push({
+            id_detalle_compra: row.id_detalle_compra,
+            id_producto: row.id_producto,
+            producto_nombre: row.producto_nombre,
+            producto_descripcion: row.producto_descripcion,
+            cantidad: parseInt(row.cantidad),
+            precio_unitario: parseFloat(row.precio_unitario),
+            subtotal: parseFloat(row.subtotal)
+          });
+        }
+      });
+
+      return Array.from(comprasMap.values());
+    } catch (error) {
+      throw error;
+    }
   }
 };
 

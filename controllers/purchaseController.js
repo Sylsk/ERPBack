@@ -124,6 +124,16 @@ const purchaseController = {
       console.error('Error al eliminar compra:', error);
       res.status(500).json({ error: 'Error al eliminar orden de compra' });
     }
+  },
+
+  obtenerInfoCompleta: async (req, res) => {
+    try {
+      const comprasCompletas = await PurchaseOrder.findAllWithCompleteInfo();
+      res.json(comprasCompletas);
+    } catch (error) {
+      console.error('Error al obtener información completa de compras:', error);
+      res.status(500).json({ error: 'Error al obtener información completa de compras' });
+    }
   }
 };
 
