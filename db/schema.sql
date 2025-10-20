@@ -41,6 +41,24 @@ CREATE TABLE proveedores (
   fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE producto_proveedor (
+  id_producto_proveedor SERIAL PRIMARY KEY,
+  id_producto INTEGER NOT NULL REFERENCES productos(id_producto) ON DELETE CASCADE,
+  id_proveedor INTEGER NOT NULL REFERENCES proveedores(id_proveedor) ON DELETE CASCADE,
+  codigo_proveedor VARCHAR(100), -- Código que usa el proveedor para este producto
+  precio_proveedor DECIMAL(12,2) NOT NULL,
+  tiempo_entrega_dias INTEGER DEFAULT 7,
+  cantidad_minima INTEGER DEFAULT 1,
+  activo BOOLEAN DEFAULT true,
+  fecha_ultima_compra DATE,
+  fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT uk_producto_proveedor UNIQUE (id_producto, id_proveedor),
+  CONSTRAINT chk_precio_proveedor_positivo CHECK (precio_proveedor >= 0),
+  CONSTRAINT chk_tiempo_entrega_positivo CHECK (tiempo_entrega_dias >= 0),
+  CONSTRAINT chk_cantidad_minima_positiva CHECK (cantidad_minima >= 1)
+);
+
 CREATE TABLE compras_oc (
   id_compra SERIAL PRIMARY KEY,
   numero_oc VARCHAR(50) UNIQUE NOT NULL,
@@ -87,3 +105,6 @@ CREATE INDEX idx_compras_empleado ON compras_oc(id_empleado);
 CREATE INDEX idx_compras_estado ON compras_oc(estado);
 CREATE INDEX idx_detalle_compra ON compras_detalle(id_compra);
 CREATE INDEX idx_detalle_producto ON compras_detalle(id_producto);
+CREATE INDEX idx_producto_proveedor_producto ON producto_proveedor(id_producto);
+CREATE INDEX idx_producto_proveedor_proveedor ON producto_proveedor(id_proveedor);
+CREATE INDEX idx_producto_proveedor_activo ON producto_proveedor(activo);

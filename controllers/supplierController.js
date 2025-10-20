@@ -95,6 +95,33 @@ const supplierController = {
       console.error('Error al eliminar proveedor:', error);
       res.status(500).json({ error: 'Error al eliminar proveedor' });
     }
+  },
+
+  // Obtener productos que vende un proveedor
+  obtenerProductos: async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      // Verificar si el proveedor existe
+      const proveedor = await Supplier.findById(id);
+      if (!proveedor) {
+        return res.status(404).json({ error: 'Proveedor no encontrado' });
+      }
+
+      const Product = require('../models/Product');
+      const productos = await Product.findBySupplier(id);
+      
+      res.json({
+        proveedor: {
+          id_proveedor: proveedor.id_proveedor,
+          nombre: proveedor.nombre
+        },
+        productos: productos
+      });
+    } catch (error) {
+      console.error('Error al obtener productos del proveedor:', error);
+      res.status(500).json({ error: 'Error al obtener productos del proveedor' });
+    }
   }
 };
 

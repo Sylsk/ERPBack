@@ -4,6 +4,7 @@ const supplierController = require('../controllers/supplierController');
 
 router.get('/', supplierController.listar);
 router.get('/:id', supplierController.obtenerPorId);
+router.get('/:id/products', supplierController.obtenerProductos);
 router.post('/', supplierController.crear);
 router.put('/:id', supplierController.actualizar);
 router.delete('/:id', supplierController.eliminar);

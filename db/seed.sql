@@ -190,3 +190,92 @@ INSERT INTO usuarios (username, password_hash, id_empleado, rol) VALUES
 ('amartinez', '$2a$10$7XrKoIse68st4tJVhQ.pKe1zR2fIKVc6v8yp6PiF77RLwgdmYM3Xi', 4, 'comprador'),
 ('llopez', '$2a$10$7XrKoIse68st4tJVhQ.pKe1zR2fIKVc6v8yp6PiF77RLwgdmYM3Xi', 5, 'comprador'),
 ('efernandez', '$2a$10$7XrKoIse68st4tJVhQ.pKe1zR2fIKVc6v8yp6PiF77RLwgdmYM3Xi', 6, 'consulta');
+
+INSERT INTO producto_proveedor (id_producto, id_proveedor, codigo_proveedor, precio_proveedor, moneda, tiempo_entrega_dias, cantidad_minima) VALUES
+-- Distribuidora Norte SAC (Equipos de cómputo y tecnología)
+(1, 1, 'DELL-LAT5420', 2450.00, 'PEN', 10, 1), -- Laptop Dell
+(2, 1, 'LG-24MK430', 340.00, 'PEN', 7, 1), -- Monitor LG
+(3, 1, 'LOG-K120', 24.00, 'PEN', 5, 10), -- Teclado Logitech
+(4, 1, 'LOG-M90', 14.50, 'PEN', 5, 20), -- Mouse Logitech
+(11, 1, 'HDMI-2M', 17.50, 'PEN', 3, 10), -- Cable HDMI
+(12, 1, 'HUB-USB4', 33.00, 'PEN', 5, 5), -- Hub USB
+(13, 1, 'HDD-1TB', 175.00, 'PEN', 7, 1), -- Disco Duro Externo
+(14, 1, 'USB-32GB', 21.00, 'PEN', 3, 10), -- Memoria USB
+
+-- Comercial Sur EIRL (Material de oficina)
+(6, 2, 'PAP-A4-75', 12.00, 'PEN', 3, 50), -- Papel Bond A4
+(10, 2, 'ARCH-PAL', 8.20, 'PEN', 5, 20), -- Archivador
+(38, 2, 'MARC-PERM', 2.40, 'PEN', 2, 50), -- Marcador permanente
+(39, 2, 'RESLAT-AM', 1.90, 'PEN', 2, 100), -- Resaltador
+(40, 2, 'LAP-AZUL', 1.40, 'PEN', 2, 200), -- Lapicero azul
+(41, 2, 'LAPIZ-HB', 0.95, 'PEN', 2, 100), -- Lápiz HB
+(48, 2, 'FOLD-MAN', 0.75, 'PEN', 2, 200), -- Folder manila
+(49, 2, 'SOB-MAN', 0.55, 'PEN', 2, 300), -- Sobre manila
+(50, 2, 'CINTA-18', 2.40, 'PEN', 3, 50), -- Cinta adhesiva
+
+-- Importaciones Global SA (Equipos especializados)
+(5, 3, 'HP-LASERJET', 430.00, 'PEN', 15, 1), -- Impresora HP
+(7, 3, 'HP-85A', 175.00, 'PEN', 10, 5), -- Tóner HP
+(15, 3, 'LOG-C920', 210.00, 'PEN', 12, 1), -- Webcam
+(19, 3, 'EST-1000VA', 115.00, 'PEN', 8, 1), -- Estabilizador
+(20, 3, 'UPS-1500VA', 435.00, 'PEN', 15, 1), -- UPS
+(21, 3, 'SW-8P-GB', 82.00, 'PEN', 7, 1), -- Switch Ethernet
+(22, 3, 'RT-AC1200', 92.00, 'PEN', 10, 1), -- Router WiFi
+
+-- Proveedora Central SRL (Mobiliario)
+(8, 4, 'SILLA-ERG', 270.00, 'PEN', 14, 1), -- Silla ergonómica
+(9, 4, 'ESC-120X60', 340.00, 'PEN', 21, 1), -- Escritorio
+(65, 4, 'PIZ-60X90', 72.00, 'PEN', 10, 1), -- Pizarra acrílica
+(77, 4, 'VENT-16P', 92.00, 'PEN', 7, 1), -- Ventilador
+(78, 4, 'RELOJ-30CM', 26.50, 'PEN', 5, 5), -- Reloj de pared
+(79, 4, 'PAP-15L', 33.00, 'PEN', 5, 5), -- Papelera
+
+-- Almacenes Perú SAC (Material diverso)
+(16, 5, 'HEADS-USB', 43.00, 'PEN', 5, 10), -- Auriculares
+(17, 5, 'MPAD-ERG', 11.50, 'PEN', 3, 20), -- Mousepad
+(28, 5, 'LAMP-LED', 30.50, 'PEN', 5, 10), -- Lámpara LED
+(61, 5, 'PILAS-AA', 7.50, 'PEN', 2, 20), -- Pilas AA
+(62, 5, 'PILAS-AAA', 7.20, 'PEN', 2, 20), -- Pilas AAA
+(71, 5, 'MOCH-15P6', 82.00, 'PEN', 7, 1), -- Mochila laptop
+
+-- Suministros Industriales SA (Equipos industriales)
+(84, 6, 'GUILL-A4', 82.00, 'PEN', 10, 1), -- Guillotina
+(85, 6, 'ANIL-MAN', 115.00, 'PEN', 12, 1), -- Anilladora
+(88, 6, 'PLAST-A4', 92.00, 'PEN', 8, 1), -- Plastificadora
+(89, 6, 'DESTR-8H', 175.00, 'PEN', 15, 1), -- Destructora
+(90, 6, 'EXT-6KG', 82.00, 'PEN', 10, 1), -- Extintor
+
+-- Precios alternativos de otros proveedores para algunos productos
+(1, 3, 'DELL-5420-IMP', 2480.00, 'PEN', 12, 1), -- Laptop Dell desde Importaciones
+(2, 4, 'MON-24-LG', 355.00, 'PEN', 10, 1), -- Monitor desde Proveedora Central
+(5, 1, 'IMP-LASER', 460.00, 'PEN', 8, 1), -- Impresora desde Distribuidora Norte
+(6, 5, 'PAPEL-A4', 12.80, 'PEN', 5, 30), -- Papel desde Almacenes Perú
+(8, 6, 'SILLA-OF', 290.00, 'PEN', 18, 1), -- Silla desde Suministros Industriales
+
+-- Materiales del Norte EIRL (Material regional)
+(23, 7, 'UTP-CAT6', 375.00, 'PEN', 10, 1), -- Cable UTP
+(24, 7, 'PATCH-3M', 7.80, 'PEN', 5, 50), -- Patch cord
+(25, 7, 'RACK-6U', 275.00, 'PEN', 15, 1), -- Rack
+(26, 7, 'BAND-1M', 43.50, 'PEN', 7, 5), -- Bandeja organizadora
+
+-- Distribuciones Express SAC (Consumibles)
+(33, 8, 'GRAP-26-6', 3.30, 'PEN', 2, 50), -- Grapas
+(34, 8, 'CLIPS-50', 3.80, 'PEN', 2, 40), -- Clips
+(51, 8, 'PEG-BARRA', 3.30, 'PEN', 3, 30), -- Pegamento barra
+(52, 8, 'SIL-250ML', 4.30, 'PEN', 3, 20), -- Silicona líquida
+(53, 8, 'ETIQ-AUTO', 11.50, 'PEN', 5, 20), -- Etiquetas
+
+-- Productos Nacionales SA (Productos nacionales)
+(63, 9, 'CALC-CIEN', 33.50, 'PEN', 5, 5), -- Calculadora científica
+(64, 9, 'CALC-BAS', 11.50, 'PEN', 3, 10), -- Calculadora básica
+(66, 9, 'MARC-PIZ', 3.30, 'PEN', 2, 30), -- Marcador pizarra
+(67, 9, 'BOR-PIZ', 4.80, 'PEN', 3, 15), -- Borrador pizarra
+(68, 9, 'CART-664N', 82.00, 'PEN', 7, 5), -- Cartucho HP negro
+(69, 9, 'CART-664C', 92.00, 'PEN', 7, 5), -- Cartucho HP color
+
+-- Comercializadora Andina SRL (Productos andinos)
+(95, 10, 'MASK-KN95', 26.50, 'PEN', 3, 10), -- Mascarillas
+(96, 10, 'ALC-GEL-1L', 17.20, 'PEN', 2, 20), -- Alcohol gel
+(97, 10, 'DISP-AUTO', 52.00, 'PEN', 7, 5), -- Dispensador alcohol
+(98, 10, 'TERM-INFR', 82.00, 'PEN', 10, 1), -- Termómetro
+(99, 10, 'PURIF-HEPA', 275.00, 'PEN', 15, 1); -- Purificador aire

@@ -2,10 +2,20 @@ const express = require('express');
 const router = express.Router();
 const Product = require('../models/Product');
 
-// GET /api/products - Listar todos los productos
+// GET /api/products - Listar todos los productos o filtrados por proveedor
 router.get('/', async (req, res) => {
   try {
-    const productos = await Product.findAll();
+    const { supplier_id } = req.query;
+    
+    let productos;
+    if (supplier_id) {
+      // Filtrar productos por proveedor
+      productos = await Product.findBySupplier(supplier_id);
+    } else {
+      // Obtener todos los productos
+      productos = await Product.findAll();
+    }
+    
     res.json(productos);
   } catch (error) {
     console.error('Error al listar productos:', error);
