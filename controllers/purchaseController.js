@@ -77,10 +77,18 @@ const purchaseController = {
         item.subtotal = item.cantidad * item.precio_unitario;
       }
 
+      // Calcular subtotal, IVA (19%) y total
+      const subtotal = detalle.reduce((sum, item) => sum + parseFloat(item.subtotal), 0);
+      const iva = subtotal * 0.19;
+      const total = subtotal + iva;
+
       const compra = await PurchaseOrder.create({
         id_proveedor,
         id_empleado,
-        detalle
+        detalle,
+        subtotal,
+        iva,
+        total
       });
 
       const compraCompleta = await PurchaseOrder.findWithDetails(compra.id_orden_compra);

@@ -58,17 +58,12 @@ const PurchaseOrder = {
     try {
       await client.query('BEGIN');
 
-      const { id_proveedor, id_empleado, detalle } = data;
-
-      let total_compra = 0;
-      detalle.forEach(item => {
-        total_compra += parseFloat(item.subtotal);
-      });
+      const { id_proveedor, id_empleado, detalle, subtotal, iva, total } = data;
 
       const compraResult = await client.query(
-        `INSERT INTO "Compras".compras_oc (id_proveedor, id_empleado, estado)
-         VALUES ($1, $2, 'pendiente') RETURNING *`,
-        [id_proveedor, id_empleado]
+        `INSERT INTO "Compras".compras_oc (id_proveedor, id_empleado, estado, subtotal, iva, total)
+         VALUES ($1, $2, 'pendiente', $3, $4, $5) RETURNING *`,
+        [id_proveedor, id_empleado, subtotal, iva, total]
       );
 
       const id_orden_compra = compraResult.rows[0].id_orden_compra;
@@ -146,6 +141,9 @@ const PurchaseOrder = {
           oc.id_empleado,
           oc.fecha,
           oc.estado,
+          oc.subtotal,
+          oc.iva,
+          oc.total,
           p.nombre as proveedor_nombre,
           p.rut as proveedor_rut,
           p.direccion as proveedor_direccion,
@@ -158,11 +156,9 @@ const PurchaseOrder = {
           prod.descripcion as producto_descripcion,
           d.cantidad,
           d.precio_unitario,
-          d.subtotal,
-          -- Totales calculados por orden
-          (SELECT SUM(cd.subtotal) 
-           FROM "Compras".compras_detalle cd 
-           WHERE cd.id_orden_compra = oc.id_orden_compra) as total_orden
+          d.subtotal as detalle_subtotal,
+          -- Para compatibilidad con código existente
+          oc.total as total_orden
         FROM "Compras".compras_oc oc
         INNER JOIN public.proveedor p ON oc.id_proveedor = p.id_proveedor
         INNER JOIN public.empleado e ON oc.id_empleado = e.id_empleado
@@ -184,6 +180,9 @@ const PurchaseOrder = {
             id_empleado: row.id_empleado,
             fecha: row.fecha,
             estado: row.estado,
+            subtotal: parseFloat(row.subtotal) || 0,
+            iva: parseFloat(row.iva) || 0,
+            total: parseFloat(row.total) || 0,
             total_orden: parseFloat(row.total_orden) || 0,
             proveedor: {
               nombre: row.proveedor_nombre,
@@ -208,7 +207,7 @@ const PurchaseOrder = {
             producto_descripcion: row.producto_descripcion,
             cantidad: parseInt(row.cantidad),
             precio_unitario: parseFloat(row.precio_unitario),
-            subtotal: parseFloat(row.subtotal)
+            subtotal: parseFloat(row.detalle_subtotal)
           });
         }
       });
