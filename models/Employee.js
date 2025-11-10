@@ -3,14 +3,14 @@ const pool = require('../db/connection');
 const Employee = {
   findAll: async () => {
     const result = await pool.query(
-      'SELECT * FROM public.empleado ORDER BY apellido, nombre'
+      'SELECT * FROM empleados WHERE activo = true ORDER BY apellido, nombre'
     );
     return result.rows;
   },
 
   findById: async (id) => {
     const result = await pool.query(
-      'SELECT * FROM public.empleado WHERE id_empleado = $1',
+      'SELECT * FROM empleados WHERE id_empleado = $1 AND activo = true',
       [id]
     );
     return result.rows[0];
@@ -18,7 +18,7 @@ const Employee = {
 
   exists: async (id) => {
     const result = await pool.query(
-      'SELECT id_empleado FROM public.empleado WHERE id_empleado = $1',
+      'SELECT id_empleado FROM empleados WHERE id_empleado = $1 AND activo = true',
       [id]
     );
     return result.rows.length > 0;

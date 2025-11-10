@@ -1,12 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const purchaseController = require('../controllers/purchaseController');
+const { validateCreatePurchase, validateUpdatePurchase, validatePurchaseBusinessRules } = require('../validators/purchaseValidator');
+const { param } = require('express-validator');
+const { handleValidationErrors } = require('../validators/commonValidators');
+
+const validatePurchaseId = [
+  param('id_orden_compra').isInt({ min: 1 }).toInt(),
+  handleValidationErrors
+];
 
 router.get('/', purchaseController.listar);
 router.get('/info-completa', purchaseController.obtenerInfoCompleta);
-router.get('/:id_orden_compra', purchaseController.obtenerPorId);
-router.post('/', purchaseController.crear);
-router.put('/:id_orden_compra', purchaseController.actualizar);
-router.delete('/:id_orden_compra', purchaseController.eliminar);
+router.get('/:id_orden_compra', validatePurchaseId, purchaseController.obtenerPorId);
+router.post('/', validateCreatePurchase, validatePurchaseBusinessRules, purchaseController.crear);
+router.put('/:id_orden_compra', validatePurchaseId, validateUpdatePurchase, purchaseController.actualizar);
+router.delete('/:id_orden_compra', validatePurchaseId, purchaseController.eliminar);
 
 module.exports = router;
