@@ -8,6 +8,9 @@ const employeesRoutes = require('./routes/employees');
 const productsRoutes = require('./routes/products');
 const productosSinStockRoutes = require('./routes/productos-sin-stock');
 
+// Importar servicio de PDF para limpieza automática
+const PDFService = require('./services/pdfService');
+
 const app = express();
 
 app.use(cors());
@@ -47,6 +50,10 @@ const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
   console.log(`Servidor ejecutándose en puerto ${PORT}`);
+  
+  // Iniciar limpieza automática de PDFs
+  // Cada 6 horas, elimina archivos mayores a 24 horas
+  PDFService.iniciarLimpiezaAutomatica(6, 24);
 });
 
 module.exports = app;
