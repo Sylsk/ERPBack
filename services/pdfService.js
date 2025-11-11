@@ -11,6 +11,12 @@ class PDFService {
   static async generarFacturaCompra(ordenCompra) {
     return new Promise((resolve, reject) => {
       try {
+        // Asegurar que el directorio de facturas existe
+        const directorioFacturas = path.join(__dirname, '../uploads/facturas');
+        if (!fs.existsSync(directorioFacturas)) {
+          fs.mkdirSync(directorioFacturas, { recursive: true });
+        }
+
         // Crear nuevo documento PDF
         const doc = new PDFDocument({
           size: 'A4',
@@ -20,7 +26,7 @@ class PDFService {
         // Generar nombre del archivo
         const fechaActual = new Date().toISOString().slice(0, 10);
         const nombreArchivo = `factura_compra_${ordenCompra.id_orden_compra}_${fechaActual}.pdf`;
-        const rutaArchivo = path.join(__dirname, '../uploads/facturas', nombreArchivo);
+        const rutaArchivo = path.join(directorioFacturas, nombreArchivo);
 
         // Crear stream para escribir el PDF
         const stream = fs.createWriteStream(rutaArchivo);
@@ -254,8 +260,10 @@ class PDFService {
     try {
       const directorioFacturas = path.join(__dirname, '../uploads/facturas');
       
+      // Crear el directorio si no existe
       if (!fs.existsSync(directorioFacturas)) {
-        return;
+        fs.mkdirSync(directorioFacturas, { recursive: true });
+        return; // No hay archivos que limpiar en un directorio nuevo
       }
 
       const archivos = fs.readdirSync(directorioFacturas);
