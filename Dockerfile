@@ -17,7 +17,7 @@ RUN npm install -g nodemon
 COPY . .
 
 # Exponer el puerto de la aplicación
-EXPOSE 3000
+EXPOSE 3002
 
 # Comando para ejecutar la aplicación en modo desarrollo con nodemon
 CMD ["npm", "run", "dev"]

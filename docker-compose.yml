@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "3002:3002"
     volumes:
       # Montar el código fuente para hot reload
       - .:/app
