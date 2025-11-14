@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Product = require('../models/Product');
 const pool = require('../db/connection');
+const { validateId } = require('../validators/commonValidators');
+const { validateCreateProduct, validateUpdateProduct } = require('../validators/productValidator');
 
 // GET /api/products - Listar todos los productos o filtrados por proveedor
 router.get('/', async (req, res) => {
@@ -42,7 +44,7 @@ router.get('/available', async (req, res) => {
 });
 
 // GET /api/products/:id - Obtener producto por ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', validateId, async (req, res) => {
   try {
     const { id } = req.params;
     const producto = await Product.findById(id);

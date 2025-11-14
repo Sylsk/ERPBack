@@ -18,8 +18,8 @@ const purchaseController = {
 
   obtenerPorId: async (req, res) => {
     try {
-      const { id_orden_compra } = req.params;
-      const compra = await PurchaseOrder.findWithDetails(id_orden_compra);
+      const id = req.params.id_orden_compra || req.params.id_compra;
+      const compra = await PurchaseOrder.findWithDetails(id);
 
       if (!compra) {
         return res.status(404).json({ error: 'Orden de compra no encontrada' });
@@ -34,69 +34,33 @@ const purchaseController = {
 
   crear: async (req, res) => {
     try {
-      const { id_proveedor, id_empleado, detalle } = req.body;
-
-      if (!id_proveedor) {
-        return res.status(400).json({ error: 'El proveedor es obligatorio' });
-      }
-
-      if (!id_empleado) {
-        return res.status(400).json({ error: 'El empleado es obligatorio' });
-      }
-
-      if (!detalle || detalle.length === 0) {
-        return res.status(400).json({ error: 'Debe incluir al menos un producto' });
-      }
-
-      const proveedor = await Supplier.findById(id_proveedor);
-      if (!proveedor) {
-        return res.status(400).json({ error: 'El proveedor no existe' });
-      }
-
-      const empleadoExiste = await Employee.exists(id_empleado);
-      if (!empleadoExiste) {
-        return res.status(400).json({ error: 'El empleado no existe' });
-      }
+      const { id_proveedor, id_empleado, detalle, fecha_entrega_esperada, observaciones } = req.body;
+      const { subtotalCalculado, igvCalculado, totalCalculado } = req;
 
       for (const item of detalle) {
-        if (!item.id_producto || !item.cantidad || !item.precio_unitario) {
-          return res.status(400).json({ error: 'Datos incompletos en el detalle' });
-        }
-
-        if (item.cantidad <= 0) {
-          return res.status(400).json({ error: 'La cantidad debe ser mayor a cero' });
-        }
-
-        if (item.precio_unitario < 0) {
-          return res.status(400).json({ error: 'El precio no puede ser negativo' });
-        }
-
-        const productoExiste = await Product.exists(item.id_producto);
-        if (!productoExiste) {
-          return res.status(400).json({ error: `El producto ${item.id_producto} no existe en inventario` });
-        }
-
         item.subtotal = item.cantidad * item.precio_unitario;
       }
-
-      // Calcular subtotal, IVA (19%) y total
-      const subtotal = detalle.reduce((sum, item) => sum + parseFloat(item.subtotal), 0);
-      const iva = subtotal * 0.19;
-      const total = subtotal + iva;
 
       const compra = await PurchaseOrder.create({
         id_proveedor,
         id_empleado,
         detalle,
-        subtotal,
-        iva,
-        total
+        subtotal: subtotalCalculado,
+        igv: igvCalculado,
+        total: totalCalculado,
+        fecha_entrega_esperada,
+        observaciones
       });
 
-      const compraCompleta = await PurchaseOrder.findWithDetails(compra.id_orden_compra);
+      const compraCompleta = await PurchaseOrder.findWithDetails(compra.id_compra);
       res.status(201).json(compraCompleta);
     } catch (error) {
       console.error('Error al crear compra:', error);
+      
+      if (error.code === '23505') {
+        return res.status(400).json({ error: 'El número de OC ya existe' });
+      }
+      
       res.status(500).json({ error: 'Error al crear orden de compra' });
     }
   },

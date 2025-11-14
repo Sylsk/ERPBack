@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const Employee = require('../models/Employee');
+const { validateId } = require('../validators/commonValidators');
+const { validateCreateEmployee, validateUpdateEmployee } = require('../validators/employeeValidator');
 
 // GET /api/employees - Listar todos los empleados
 router.get('/', async (req, res) => {
@@ -14,7 +16,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET /api/employees/:id - Obtener empleado por ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', validateId, async (req, res) => {
   try {
     const { id } = req.params;
     const empleado = await Employee.findById(id);

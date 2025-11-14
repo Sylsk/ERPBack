@@ -29,26 +29,26 @@ const supplierController = {
 
   crear: async (req, res) => {
     try {
-      const { nombre, rut, direccion, telefono, email, contacto } = req.body;
-
-      if (!nombre || !rut) {
-        return res.status(400).json({ error: 'Nombre y RUT son requeridos' });
-      }
+      const razon_social = req.body.razon_social || req.body.nombre;
+      const ruc = req.body.ruc || req.body.rut;
+      const contacto_nombre = req.body.contacto_nombre || req.body.contacto;
+      const { direccion, telefono, email, contacto_telefono } = req.body;
 
       const proveedor = await Supplier.create({
-        nombre,
-        rut,
+        razon_social,
+        ruc,
         direccion,
         telefono,
         email,
-        contacto
+        contacto_nombre,
+        contacto_telefono
       });
 
       res.status(201).json(proveedor);
     } catch (error) {
       console.error('Error al crear proveedor:', error);
       if (error.code === '23505') {
-        return res.status(400).json({ error: 'El RUT ya está registrado' });
+        return res.status(400).json({ error: 'El RUC ya está registrado' });
       }
       res.status(500).json({ error: 'Error al crear proveedor' });
     }
@@ -57,25 +57,23 @@ const supplierController = {
   actualizar: async (req, res) => {
     try {
       const { id } = req.params;
-      const { nombre, rut, direccion, telefono, email, contacto } = req.body;
-
       const proveedorExiste = await Supplier.findById(id);
       if (!proveedorExiste) {
         return res.status(404).json({ error: 'Proveedor no encontrado' });
       }
 
-      const proveedor = await Supplier.update(id, {
-        nombre,
-        rut,
-        direccion,
-        telefono,
-        email,
-        contacto
-      });
+      const dataToUpdate = { ...req.body };
+      if (req.body.nombre) dataToUpdate.razon_social = req.body.nombre;
+      if (req.body.rut) dataToUpdate.ruc = req.body.rut;
+      if (req.body.contacto) dataToUpdate.contacto_nombre = req.body.contacto;
 
+      const proveedor = await Supplier.update(id, dataToUpdate);
       res.json(proveedor);
     } catch (error) {
       console.error('Error al actualizar proveedor:', error);
+      if (error.code === '23505') {
+        return res.status(400).json({ error: 'El RUC ya está registrado por otro proveedor' });
+      }
       res.status(500).json({ error: 'Error al actualizar proveedor' });
     }
   },
@@ -114,7 +112,7 @@ const supplierController = {
       res.json({
         proveedor: {
           id_proveedor: proveedor.id_proveedor,
-          nombre: proveedor.nombre
+          razon_social: proveedor.razon_social
         },
         productos: productos
       });

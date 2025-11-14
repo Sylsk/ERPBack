@@ -53,7 +53,7 @@ const Product = {
 
   exists: async (id) => {
     const result = await pool.query(
-      'SELECT id_producto FROM public.producto WHERE id_producto = $1 AND estado = true',
+      'SELECT id_producto FROM public.producto WHERE id_producto = $1',
       [id]
     );
     return result.rows.length > 0;
