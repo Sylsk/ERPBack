@@ -27,8 +27,10 @@ const validateCreatePurchase = [
 const validateUpdatePurchase = [
   body('estado')
     .notEmpty()
-    .isIn(['PENDIENTE', 'APROBADA', 'RECHAZADA', 'RECIBIDA', 'CANCELADA'])
-    .withMessage('Estado inválido'),
+    .trim()
+    .customSanitizer(value => value.toUpperCase()) // Convertir a mayúsculas automáticamente
+    .isIn(['PENDIENTE', 'APROBADA', 'RECHAZADA'])
+    .withMessage('Estado inválido. Debe ser: PENDIENTE, APROBADA o RECHAZADA'),
   body('observaciones').optional().isLength({ max: 1000 }).trim().escape(),
 
   handleValidationErrors

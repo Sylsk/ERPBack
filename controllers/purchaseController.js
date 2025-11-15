@@ -35,7 +35,7 @@ const purchaseController = {
   crear: async (req, res) => {
     try {
       const { id_proveedor, id_empleado, detalle, fecha_entrega_esperada, observaciones } = req.body;
-      const { subtotalCalculado, igvCalculado, totalCalculado } = req;
+      const { subtotalCalculado, ivaCalculado, totalCalculado } = req;
 
       for (const item of detalle) {
         item.subtotal = item.cantidad * item.precio_unitario;
@@ -46,7 +46,7 @@ const purchaseController = {
         id_empleado,
         detalle,
         subtotal: subtotalCalculado,
-        iva: igvCalculado,  // Usar 'iva' en lugar de 'igv' para la base de datos
+        iva: ivaCalculado,
         total: totalCalculado,
         fecha_entrega_esperada,
         observaciones
@@ -70,10 +70,13 @@ const purchaseController = {
       const { id_orden_compra } = req.params;
       const { estado } = req.body;
 
-      // Validar que el estado sea válido
-      const estadosValidos = ['pendiente', 'aprobada', 'rechazada'];
-      if (!estadosValidos.includes(estado)) {
-        return res.status(400).json({ error: 'Estado no válido. Debe ser: pendiente, aprobada o rechazada' });
+      // Validar que el estado sea válido (aceptar mayúsculas y minúsculas)
+      const estadoUpper = estado?.toUpperCase();
+      const estadosValidos = ['PENDIENTE', 'APROBADA', 'RECHAZADA'];
+      if (!estadosValidos.includes(estadoUpper)) {
+        return res.status(400).json({ 
+          error: 'Estado no válido. Debe ser: PENDIENTE, APROBADA o RECHAZADA' 
+        });
       }
 
       const compraExiste = await PurchaseOrder.findById(id_orden_compra);
@@ -81,14 +84,14 @@ const purchaseController = {
         return res.status(404).json({ error: 'Orden de compra no encontrada' });
       }
 
-      // Actualizar el estado (sin generar PDF automáticamente)
-      const compra = await PurchaseOrder.update(id_orden_compra, { estado });
+      // Actualizar el estado (usar mayúsculas)
+      const compra = await PurchaseOrder.update(id_orden_compra, { estado: estadoUpper });
 
       // Respuesta simple sin generar PDF
       res.json({
         ...compra,
-        mensaje: `Orden de compra ${estado} correctamente`,
-        puede_generar_factura: estado === 'aprobada' // Indica si se puede generar factura
+        mensaje: `Orden de compra ${estadoUpper} correctamente`,
+        puede_generar_factura: estadoUpper === 'APROBADA' // Indica si se puede generar factura
       });
 
     } catch (error) {
@@ -135,7 +138,7 @@ const purchaseController = {
       }
 
       // Verificar que la orden esté aprobada
-      if (ordenCompleta.estado !== 'aprobada') {
+      if (ordenCompleta.estado !== 'APROBADA') {
         return res.status(400).json({ 
           error: 'Solo se pueden generar facturas para órdenes aprobadas',
           estado_actual: ordenCompleta.estado
@@ -173,7 +176,7 @@ const purchaseController = {
         return res.status(404).json({ error: 'Orden de compra no encontrada' });
       }
 
-      if (orden.estado !== 'aprobada') {
+      if (orden.estado !== 'APROBADA') {
         return res.status(400).json({ error: 'La orden debe estar aprobada para descargar la factura' });
       }
 
