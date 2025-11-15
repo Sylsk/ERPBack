@@ -3,14 +3,14 @@ const pool = require('../db/connection');
 const Supplier = {
   findAll: async () => {
     const result = await pool.query(
-      'SELECT * FROM proveedores WHERE activo = true ORDER BY razon_social'
+      'SELECT * FROM public.proveedor ORDER BY nombre'
     );
     return result.rows;
   },
 
   findById: async (id) => {
     const result = await pool.query(
-      'SELECT * FROM proveedores WHERE id_proveedor = $1 AND activo = true',
+      'SELECT * FROM public.proveedor WHERE id_proveedor = $1',
       [id]
     );
     return result.rows[0];
@@ -18,18 +18,18 @@ const Supplier = {
 
   findByIdIncludeInactive: async (id) => {
     const result = await pool.query(
-      'SELECT * FROM proveedores WHERE id_proveedor = $1',
+      'SELECT * FROM public.proveedor WHERE id_proveedor = $1',
       [id]
     );
     return result.rows[0];
   },
 
   create: async (data) => {
-    const { razon_social, ruc, direccion, telefono, email, contacto_nombre, contacto_telefono } = data;
+    const { nombre, rut, direccion, telefono, email, contacto } = data;
     const result = await pool.query(
-      `INSERT INTO proveedores (razon_social, ruc, direccion, telefono, email, contacto_nombre, contacto_telefono)
-       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-      [razon_social, ruc, direccion, telefono, email, contacto_nombre, contacto_telefono]
+      `INSERT INTO public.proveedor (nombre, rut, direccion, telefono, email, contacto)
+       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+      [nombre, rut, direccion, telefono, email, contacto]
     );
     return result.rows[0];
   },
@@ -39,26 +39,24 @@ const Supplier = {
     const values = [];
     let paramCount = 1;
 
-    if (data.razon_social !== undefined) { fields.push(`razon_social = $${paramCount++}`); values.push(data.razon_social); }
-    if (data.ruc !== undefined) { fields.push(`ruc = $${paramCount++}`); values.push(data.ruc); }
+    if (data.nombre !== undefined) { fields.push(`nombre = $${paramCount++}`); values.push(data.nombre); }
+    if (data.rut !== undefined) { fields.push(`rut = $${paramCount++}`); values.push(data.rut); }
     if (data.direccion !== undefined) { fields.push(`direccion = $${paramCount++}`); values.push(data.direccion); }
     if (data.telefono !== undefined) { fields.push(`telefono = $${paramCount++}`); values.push(data.telefono); }
     if (data.email !== undefined) { fields.push(`email = $${paramCount++}`); values.push(data.email); }
-    if (data.contacto_nombre !== undefined) { fields.push(`contacto_nombre = $${paramCount++}`); values.push(data.contacto_nombre); }
-    if (data.contacto_telefono !== undefined) { fields.push(`contacto_telefono = $${paramCount++}`); values.push(data.contacto_telefono); }
-    if (data.activo !== undefined) { fields.push(`activo = $${paramCount++}`); values.push(data.activo); }
+    if (data.contacto !== undefined) { fields.push(`contacto = $${paramCount++}`); values.push(data.contacto); }
 
     if (fields.length === 0) throw new Error('No hay campos para actualizar');
 
     values.push(id);
-    const query = `UPDATE proveedores SET ${fields.join(', ')} WHERE id_proveedor = $${paramCount} RETURNING *`;
+    const query = `UPDATE public.proveedor SET ${fields.join(', ')} WHERE id_proveedor = $${paramCount} RETURNING *`;
     const result = await pool.query(query, values);
     return result.rows[0];
   },
 
   delete: async (id) => {
     const result = await pool.query(
-      'UPDATE proveedores SET activo = false WHERE id_proveedor = $1 RETURNING *',
+      'DELETE FROM public.proveedor WHERE id_proveedor = $1 RETURNING *',
       [id]
     );
     return result.rows[0];

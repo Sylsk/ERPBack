@@ -46,13 +46,13 @@ const purchaseController = {
         id_empleado,
         detalle,
         subtotal: subtotalCalculado,
-        igv: igvCalculado,
+        iva: igvCalculado,  // Usar 'iva' en lugar de 'igv' para la base de datos
         total: totalCalculado,
         fecha_entrega_esperada,
         observaciones
       });
 
-      const compraCompleta = await PurchaseOrder.findWithDetails(compra.id_compra);
+      const compraCompleta = await PurchaseOrder.findWithDetails(compra.id_orden_compra);
       res.status(201).json(compraCompleta);
     } catch (error) {
       console.error('Error al crear compra:', error);
