@@ -2,6 +2,7 @@ const PurchaseOrder = require('../models/PurchaseOrder');
 const Supplier = require('../models/Supplier');
 const Product = require('../models/Product');
 const Employee = require('../models/Employee');
+const ProviderOrder = require('../models/ProviderOrder');
 const PDFService = require('../services/pdfService');
 const path = require('path');
 
@@ -87,11 +88,19 @@ const purchaseController = {
       // Actualizar el estado (usar mayúsculas)
       const compra = await PurchaseOrder.update(id_orden_compra, { estado: estadoUpper });
 
+      // Verificar si está pagada (solo si está aprobada)
+      let puedeGenerarFactura = false;
+      if (estadoUpper === 'APROBADA') {
+        const estadoPago = await ProviderOrder.isPagada(id_orden_compra);
+        puedeGenerarFactura = estadoPago.existe && estadoPago.pagada;
+      }
+
       // Respuesta simple sin generar PDF
       res.json({
         ...compra,
         mensaje: `Orden de compra ${estadoUpper} correctamente`,
-        puede_generar_factura: estadoUpper === 'APROBADA' // Indica si se puede generar factura
+        puede_generar_factura: puedeGenerarFactura,
+        info_pago: estadoUpper === 'APROBADA' ? 'La factura solo podrá generarse una vez que el proveedor acepte y se realice el pago' : null
       });
 
     } catch (error) {
@@ -145,6 +154,30 @@ const purchaseController = {
         });
       }
 
+      // Verificar que el proveedor haya aceptado y la orden esté pagada
+      const estadoPago = await ProviderOrder.isPagada(id_orden_compra);
+      
+      if (!estadoPago.existe) {
+        return res.status(400).json({ 
+          error: 'La orden aún no ha sido enviada al proveedor',
+          detalle: 'Espere a que la orden sea procesada'
+        });
+      }
+
+      if (!estadoPago.aceptada) {
+        return res.status(400).json({ 
+          error: 'El proveedor aún no ha aceptado esta orden de compra',
+          detalle: 'Solo se pueden generar facturas para órdenes aceptadas por el proveedor'
+        });
+      }
+
+      if (!estadoPago.pagada) {
+        return res.status(400).json({ 
+          error: 'La orden debe estar pagada para generar la factura',
+          detalle: 'Use el endpoint de pago para marcar la orden como pagada'
+        });
+      }
+
       // Generar el PDF temporalmente
       const rutaPDF = await PDFService.generarFacturaCompra(ordenCompleta);
 
@@ -178,6 +211,16 @@ const purchaseController = {
 
       if (orden.estado !== 'APROBADA') {
         return res.status(400).json({ error: 'La orden debe estar aprobada para descargar la factura' });
+      }
+
+      // Verificar que esté pagada
+      const estadoPago = await ProviderOrder.isPagada(id_orden_compra);
+      
+      if (!estadoPago.existe || !estadoPago.aceptada || !estadoPago.pagada) {
+        return res.status(400).json({ 
+          error: 'La orden debe estar aceptada por el proveedor y pagada para descargar la factura',
+          detalle: 'Verifique el estado de la orden en el módulo de proveedores'
+        });
       }
 
       // Obtener datos completos para generar el PDF
