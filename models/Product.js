@@ -57,6 +57,13 @@ const Product = {
       [id]
     );
     return result.rows.length > 0;
+  },
+
+  getLastCode: async () => {
+    const result = await pool.query(
+      "SELECT codigo FROM public.producto WHERE codigo LIKE 'PROD-%' ORDER BY id_producto DESC LIMIT 1"
+    );
+    return result.rows[0]?.codigo;
   }
 };
 

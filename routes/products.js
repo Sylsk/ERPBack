@@ -1,9 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const Product = require('../models/Product');
+const productController = require('../controllers/productController');
 const pool = require('../db/connection');
 const { validateId } = require('../validators/commonValidators');
 const { validateCreateProduct, validateUpdateProduct } = require('../validators/productValidator');
+
+// POST /api/products/create-from-request - Crear producto desde solicitud
+router.post('/create-from-request', productController.createFromRequest);
 
 // GET /api/products - Listar todos los productos o filtrados por proveedor
 router.get('/', async (req, res) => {

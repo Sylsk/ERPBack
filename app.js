@@ -6,6 +6,7 @@ const suppliersRoutes = require('./routes/suppliers');
 const purchasesRoutes = require('./routes/purchases');
 const employeesRoutes = require('./routes/employees');
 const productsRoutes = require('./routes/products');
+const productRequestsRoutes = require('./routes/product-requests');
 const productosSinStockRoutes = require('./routes/productos-sin-stock');
 const providerOrdersRoutes = require('./routes/provider-orders');
 
@@ -22,6 +23,7 @@ app.use('/api/suppliers', suppliersRoutes);
 app.use('/api/purchases', purchasesRoutes);
 app.use('/api/employees', employeesRoutes);
 app.use('/api/products', productsRoutes);
+app.use('/api/product-requests', productRequestsRoutes);
 app.use('/api/productos-sin-stock', productosSinStockRoutes);
 app.use('/api/provider-orders', providerOrdersRoutes);
 
