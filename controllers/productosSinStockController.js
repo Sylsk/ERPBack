@@ -17,7 +17,14 @@ const ProductosSinStockController = {
           pss.precio_venta,
           pss.fecha_sin_stock,
           p.cantidad,
-          p.estado
+          p.estado,
+          COALESCE((
+            SELECT SUM(cd.cantidad)
+            FROM "Compras".compras_detalle cd
+            INNER JOIN "Compras".compras_oc co ON cd.id_orden_compra = co.id_orden_compra
+            WHERE cd.id_producto = pss.id_producto
+            AND co.estado NOT IN ('FINALIZADA', 'RECHAZADA', 'CANCELADA')
+          ), 0) as cantidad_en_camino
         FROM public.productos_sin_stock pss
         LEFT JOIN public.producto p ON pss.id_producto = p.id_producto
         ORDER BY pss.fecha_sin_stock DESC;
