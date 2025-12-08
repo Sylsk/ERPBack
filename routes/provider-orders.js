@@ -11,6 +11,7 @@ const validateProviderOrderId = [
 
 // Rutas para órdenes de compra de proveedores
 router.get('/', providerOrderController.listar);
+router.get('/active', providerOrderController.listarActivas);
 router.get('/:id_oc_proveedor', validateProviderOrderId, providerOrderController.obtenerPorId);
 router.put('/:id_oc_proveedor/pagar', validateProviderOrderId, providerOrderController.marcarComoPagada);
 

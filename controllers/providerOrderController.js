@@ -15,6 +15,19 @@ const providerOrderController = {
   },
 
   /**
+   * Listar solo las órdenes de compra de proveedores activas (no finalizadas)
+   */
+  listarActivas: async (req, res) => {
+    try {
+      const ordenes = await ProviderOrder.findActive();
+      res.json(ordenes);
+    } catch (error) {
+      console.error('Error al listar órdenes activas:', error);
+      res.status(500).json({ error: 'Error al obtener órdenes activas' });
+    }
+  },
+
+  /**
    * Obtener orden de proveedor por ID
    */
   obtenerPorId: async (req, res) => {

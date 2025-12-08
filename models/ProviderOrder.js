@@ -18,6 +18,25 @@ const ProviderOrder = {
   },
 
   /**
+   * Obtener todas las órdenes de compra de proveedores que NO están finalizadas
+   */
+  findActive: async () => {
+    const result = await pool.query(
+      `SELECT op.*, 
+              p.nombre as proveedor_nombre,
+              e.nombre || ' ' || e.apellido as empleado_nombre,
+              oc.estado as estado_compra
+       FROM public.oc_proveedores op
+       INNER JOIN public.proveedor p ON op.id_proveedor = p.id_proveedor
+       INNER JOIN public.empleado e ON op.id_empleado = e.id_empleado
+       INNER JOIN "Compras".compras_oc oc ON op.id_orden_compra = oc.id_orden_compra
+       WHERE oc.estado != 'FINALIZADA'
+       ORDER BY op.fecha DESC`
+    );
+    return result.rows;
+  },
+
+  /**
    * Obtener orden de proveedor por ID
    */
   findById: async (id) => {
